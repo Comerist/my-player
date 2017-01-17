@@ -224,20 +224,30 @@
                 var _this = this;
                 var sought_progressW = null;
                 var setTime = 0;
+                var progressWidth = 0;
                 var progressPageX = 0;
                 var progressOfLeft = 0;
                 var progressSliderWidth = 0;
                 var flag = false;
                 var i = 0;
 
+
                 _this.d_progressSlider.on("mousedown", function(event) {
                     event.stopPropagation();
                     flag = true;
-                    clearInterval(_this.m_progress_pace);
+                    progressSliderWidth = $(this).width();
+                    // 获取点击的坐标位置
+                    progressPageX = event.pageX;
+                    progressOfLeft = $(this).offset().left;
+                    sought_progressW = (progressPageX - progressOfLeft) / progressSliderWidth * 100;
+                    setTime = _this.d_audio.get(0).duration / 100 * sought_progressW;
+                    _this.d_audio.get(0).currentTime = setTime;
+                    progressWidth = _this.d_audio.get(0).currentTime / _this.d_audio.get(0).duration * 100;
+                    _this.d_progressPace.css("width", progressWidth + '%');
+                    _this.d_progressLineSlider.css("left", progressWidth + '%')
                     return false;
-                }).mousemove(function() {
+                }).mousemove(function(event) {
                     event.stopPropagation();
-
                     if (flag) {
                         progressSliderWidth = $(this).width();
                         // 获取点击的坐标位置
@@ -246,28 +256,30 @@
                         sought_progressW = (progressPageX - progressOfLeft) / progressSliderWidth * 100;
                         setTime = _this.d_audio.get(0).duration / 100 * sought_progressW;
                         _this.d_audio.get(0).currentTime = setTime;
-                        this.m_progress_pace = setInterval(function() {
-                            var progressWidth = _this.d_audio.get(0).currentTime / _this.d_audio.get(0).duration * 100;
+                        var b = setInterval(function() {
+                            clearInterval(_this.m_progress_pacea);
+                            clearInterval(b);
+                            progressWidth = _this.d_audio.get(0).currentTime / _this.d_audio.get(0).duration * 100;
                             _this.d_progressPace.css("width", progressWidth + '%');
                             _this.d_progressLineSlider.css("left", progressWidth + '%')
                             console.log(i + 1)
-                        }, 600);
+                        }, 500);
                     }
                 }).mouseup(function() {
                     flag = false;
-                    clearInterval(_this.m_progress_pace);
                 });
                 $(document).mouseup(function() {
                     flag = false;
-                    clearInterval(_this.m_progress_pace);
                 });
+                var j = 0;
                 // 未拖拽时的初始设置
-                this.m_progress_pace = setInterval(function() {
-                    var progressWidth = _this.d_audio.get(0).currentTime / _this.d_audio.get(0).duration * 100;
+                _this.m_progress_pace = setInterval(function() {
+                    progressWidth = _this.d_audio.get(0).currentTime / _this.d_audio.get(0).duration * 100;
                     _this.d_progressPace.css("width", progressWidth + '%');
                     _this.d_progressLineSlider.css("left", progressWidth + '%')
+                    console.log(j + 1)
+                }, 500);
 
-                }, 600);
             },
 
             // 音量控制
